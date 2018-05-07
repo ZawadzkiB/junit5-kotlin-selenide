@@ -1,4 +1,4 @@
-#Task 1 Test UI
+#UI Test
 
 ##Running tests
 
