@@ -1,0 +1,26 @@
+[
+  {
+    "name": "Janusz",
+    "last_name": "Nowak",
+    "gender": "MALE",
+    "type": "ADULT"
+  },
+  {
+    "name": "Grazyna",
+    "last_name": "Nowak",
+    "gender": "FEMALE",
+    "type": "ADULT"
+  },
+  {
+    "name": "Dzesika",
+    "last_name": "Nowak",
+    "gender": "FEMALE",
+    "type": "KID"
+  },
+  {
+    "name": "Brajan",
+    "last_name": "Nowak",
+    "gender": "MALE",
+    "type": "NEWBORN"
+  }
+]

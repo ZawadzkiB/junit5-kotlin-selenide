@@ -1,0 +1,117 @@
+buildscript {
+    ext.kotlinVersion = '1.2.31'
+    ext.junit4Version = '4.12'
+    ext.junitVintageVersion = '5.1.1'
+    ext.junitPlatformVersion = '1.1.1'
+    ext.junitJupiterVersion = '5.1.1'
+    ext.junitReporterVersion = '1.1.0'
+    ext.selenideVersion = '4.11.1'
+    ext.webdriverManagerVersion = '2.2.1'
+    ext.klaxonVersion = '3.0.1'
+    ext.kluentVersion = '1.36'
+
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+        classpath "org.jetbrains.kotlin:kotlin-allopen:$kotlinVersion"
+        classpath "org.junit.platform:junit-platform-gradle-plugin:$junitPlatformVersion"
+        classpath "com.kncept.junit5.reporter:junit-reporter:$junitReporterVersion"
+    }
+}
+
+group 'com.bzawadzki'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+apply plugin: 'kotlin'
+apply plugin: 'maven'
+apply plugin: 'kotlin-allopen'
+apply plugin: 'org.junit.platform.gradle.plugin'
+apply plugin: 'com.kncept.junit5.reporter'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${kotlinVersion}")
+    compile("io.github.bonigarcia:webdrivermanager:${webdriverManagerVersion}")
+    compile("org.jetbrains.kotlin:kotlin-stdlib:${kotlinVersion}")
+    compile("org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}")
+    compile("com.codeborne:selenide:${selenideVersion}")
+    compile("org.amshove.kluent:kluent:${kluentVersion}")
+    compile("org.junit.jupiter:junit-jupiter-api:${junitJupiterVersion}")
+    compile("org.junit.jupiter:junit-jupiter-params:${junitJupiterVersion}")
+    runtime("org.junit.jupiter:junit-jupiter-engine:${junitJupiterVersion}")
+    compile("junit:junit:${junit4Version}")
+    runtime("org.junit.vintage:junit-vintage-engine:${junitVintageVersion}") {
+        because 'allows JUnit 3 and JUnit 4 tests to run'
+    }
+    runtime("org.junit.platform:junit-platform-launcher:${junitPlatformVersion}") {
+        because 'allows tests to run from IDEs that bundle older version of launcher'
+    }
+    implementation("com.beust:klaxon:${klaxonVersion}")
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+allOpen {
+    annotation("com.bzawadzki.annotations.Open")
+}
+
+task wrapper(type: Wrapper) {
+    description = 'Generates gradlew[.bat] scripts'
+    gradleVersion = '4.6'
+}
+
+test {
+    useJUnitPlatform {
+    }
+
+    dependsOn 'cleanTest'
+
+    testLogging {
+        events 'passed', 'skipped', 'failed'
+    }
+
+    reports {
+        html.enabled = true
+    }
+}
+
+junitPlatform {
+    filters {
+        tags {
+            exclude 'slow'
+        }
+        includeClassNamePattern '.*Test'
+    }
+}
+
+junitPlatformTest.finalizedBy 'junitHtmlReport'
+
+junitHtmlReport {
+    aggregated = false
+
+    //RAG status css overrides
+    cssRed = 'red'
+    cssAmber = 'orange'
+    cssGreen = 'green'
+
+    //Processing directories
+    testResultsDir = 'test-results'
+    testReportsDir = 'reports/tests'
+
+    //Fail build when no XML files to process
+    failOnEmpty = true
+}
